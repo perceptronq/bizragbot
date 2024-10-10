@@ -1,3 +1,3 @@
-export const cn = (...inputs: any[]): string => {
-  return inputs.filter(Boolean).join(" ");
+export const cn = (...inputs: (string | false | null | undefined)[]): string => {
+  return inputs.filter(Boolean).join(' ');
 };
