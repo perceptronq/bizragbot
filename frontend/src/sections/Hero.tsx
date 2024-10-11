@@ -35,9 +35,9 @@ export const Hero = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black flex flex-col items-center justify-center p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-4">
-        <h1 className="text-2xl font-bold text-zinc-300 text-center mb-8">
+        <h1 className="text-xl md:text-4xl font-bold text-white text-center mb-8">
           Revolutionizing Customer Interactions with Intelligent AI
         </h1>
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -45,14 +45,14 @@ export const Hero = () => {
             <Button
               key={index}
               variant="outline"
-              className="bg-zinc-800 text-zinc-300 border-zinc-700 hover:bg-zinc-700 hover:text-zinc-100 text-left h-auto py-2 px-3"
+              className="bg-gray-800 text-gray-100 hover:border-sky-500 hover:text-white text-left h-auto py-2 px-3"
               onClick={() => handleSend(question)}
             >
               {question}
             </Button>
           ))}
         </div>
-        <Card className="bg-zinc-900 border-zinc-800">
+        <Card className="bg-gray-800 border-gray-700">
           <CardContent className="p-4">
             <ScrollArea className="h-[300px] mb-4">
               {messages.map((message, index) => (
@@ -63,10 +63,10 @@ export const Hero = () => {
                   <div
                     className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}
                   >
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-zinc-700'}`}>
+                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
                       {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                     </div>
-                    <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-zinc-700 text-zinc-300'}`}>
+                    <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
                       {message.content}
                     </span>
                   </div>
@@ -80,33 +80,33 @@ export const Hero = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="w-full bg-zinc-800 text-zinc-300 border-zinc-700 focus:ring-zinc-600 focus:border-zinc-600 pr-28"
+                className="w-full bg-gray-800 text-gray-100 border-gray-700 focus:ring-sky-500 focus:border-sky-500 pr-28"
               />
               <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 rounded-full bg-zinc-700 hover:bg-zinc-600"
+                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Paperclip className="h-4 w-4 text-zinc-300" />
+                  <Paperclip className="h-4 w-4 text-gray-300" />
                   <span className="sr-only">Upload file</span>
                 </Button>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 rounded-full bg-zinc-700 hover:bg-zinc-600"
+                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
                 >
-                  <Mic className="h-4 w-4 text-zinc-300" />
+                  <Mic className="h-4 w-4 text-gray-300" />
                   <span className="sr-only">Voice input</span>
                 </Button>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 rounded-full bg-zinc-700 hover:bg-zinc-600"
+                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
                   onClick={() => handleSend()}
                 >
-                  <ArrowUp className="h-4 w-4 text-zinc-300" />
+                  <ArrowUp className="h-4 w-4 text-white" />
                   <span className="sr-only">Send message</span>
                 </Button>
               </div>
