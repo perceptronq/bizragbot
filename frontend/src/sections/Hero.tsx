@@ -20,18 +20,24 @@ export const Hero = () => {
 
   const handleSend = (message: string = input) => {
     if (message.trim()) {
+      // Add user message to chat
       setMessages([...messages, { role: 'user', content: message }]);
       setInput('');
-
-      // Make API call to Flask API
+  
+      // Make API call to Flask backend
       axios.post('http://localhost:8080/', { message })
         .then(response => {
-          const apiResponse = response.data;
+          // If the response is an object, ensure you access the `text` field or correct property
+          const apiResponse = response.data.text; // Access the `text` field here
+          
+          // Add the assistant's message to chat
           setMessages(prev => [...prev, { role: 'assistant', content: apiResponse }]);
         })
         .catch(error => console.error(error));
     }
   };
+  
+  
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
