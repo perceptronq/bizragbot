@@ -69,7 +69,8 @@ export const Hero = () => {
                       {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                     </div>
                     <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                      {message.content.text} {/* Access the text property of the message.content object */}
+                     {/* {message.content.text} */} {/* Access the text property of the message.content object */} 
+                      {message.content}
                     </span>
                   </div>
                 </div>
