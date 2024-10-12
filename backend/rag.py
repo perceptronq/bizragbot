@@ -2,6 +2,7 @@ import pickle
 import os
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
+from langchain.text_splitter import RecursiveCharacterTextSplitter
 import faiss
 import numpy as np
 import unstructured_client
@@ -61,11 +62,22 @@ pages = get_or_create_pages("/home/mayankch283/bizragbot/backend/testdata/moose-
 
 # Check if pages were loaded correctly
 if pages:
+
+    # Implement chunking
+    text_splitter = RecursiveCharacterTextSplitter(
+        chunk_size=1000,
+        chunk_overlap=200,
+        length_function=len,
+    )
+    chunks = []
+    for page in pages:
+        chunks.extend(text_splitter.split_text(page))
+
     # Embedding
     embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
     # Embed each page's content (text) returned from the Unstructured API
-    embeddings = embedding_model.embed_documents(pages)
+    embeddings = embedding_model.embed_documents(chunks)
 
     # Vector store setup
     dimension = len(embeddings[0])  # Get embedding vector size
@@ -92,10 +104,10 @@ if pages:
 
     # Example usage
     query = "what are total unit sales of year 2?"
-    similar_pages = similarity_search(query, k=3)
+    similar_chunks = similarity_search(query, k=3)
 
     # Print out the top results
-    for i, (page, distance) in enumerate(similar_pages):
+    for i, (chunk, distance) in enumerate(similar_chunks):
         print(f"Result {i + 1}:")
         print(f"Page content: {page}")
         print(f"Similarity Score (L2 distance): {distance}\n")
