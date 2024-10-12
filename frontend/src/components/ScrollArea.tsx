@@ -1,39 +1,46 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react';
 
 interface ScrollAreaProps extends React.HTMLAttributes<HTMLDivElement> {
-  className?: string
+  className?: string;
 }
 
 export const ScrollArea: React.FC<ScrollAreaProps> = ({ className = '', children, ...props }) => {
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, [children]);
+
   return (
     <div
+      ref={scrollRef}
       className={`overflow-auto ${className}`}
       style={{
         scrollbarWidth: 'thin',
-        scrollbarColor: '#38bdf8 #0f172a', /* Firefox */
+        scrollbarColor: '#4b5563 #0f172a',
       }}
       {...props}
     >
       {children}
-
-      {/* Custom Scrollbar using Tailwind and inline styles */}
       <style jsx>{`
         .${className}::-webkit-scrollbar {
-          width: 12px;
+          width: 8px;
+          position: absolute;
+          right: 0;
         }
         .${className}::-webkit-scrollbar-track {
-          background: #0f172a; /* gray-900 */
-          border-radius: 6px;
+          background: #0f172a;
         }
         .${className}::-webkit-scrollbar-thumb {
-          background: #38bdf8; /* sky-500 */
-          border-radius: 6px;
-          box-shadow: 0 0 10px rgba(56, 189, 248, 0.8), 0 0 10px rgba(56, 189, 248, 0.5); /* Glowing effect */
+          background: #4b5563;
+          border-radius: 4px;
         }
         .${className}::-webkit-scrollbar-thumb:hover {
-          background: #0ea5e9; /* sky-400 on hover */
+          background: #6b7280;
         }
       `}</style>
     </div>
-  )
-}
+  );
+};

@@ -1,21 +1,22 @@
-import { useState, useRef } from 'react'
-import { Button } from "@/components/Button"
-import { Input } from "@/components/Input"
-import { Card, CardContent } from "@/components/Card"
-import { ScrollArea } from "@/components/ScrollArea"
-import { Mic, ArrowUp, Bot, User, Paperclip } from "lucide-react"
+import { useState, useRef } from 'react';
+import { Button } from "@/components/Button";
+import { Input } from "@/components/Input";
+import { Card, CardContent } from "@/components/Card";
+import { ScrollArea } from "@/components/ScrollArea";
+import { Mic, ArrowUp, Bot, User, Paperclip } from "lucide-react";
 import axios from 'axios';
 
-
 const exampleQuestions = [
-  "Tesla sales in Q3",
+  "Tesla sales projections for Q4 2024",
+  "Projected impact of AI on retail sales",
   "Predicted stock price of Apple in 2025",
-]
+  "Estimated growth of the AI market",
+];
 
 export const Hero = () => {
-  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([])
-  const [input, setInput] = useState('')
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
+  const [input, setInput] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSend = (message: string = input) => {
     if (message.trim()) {
@@ -33,12 +34,12 @@ export const Hero = () => {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
+    const file = event.target.files?.[0];
     if (file) {
       // handle file upload here
-      setMessages([...messages, { role: 'user', content: `File uploaded: ${file.name}` }])
+      setMessages([...messages, { role: 'user', content: `File uploaded: ${file.name}` }]);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
@@ -51,7 +52,7 @@ export const Hero = () => {
             <Button
               key={index}
               variant="outline"
-              className="bg-gray-800 text-gray-100 hover:border-sky-500 hover:text-white text-left h-auto py-2 px-3"
+              className="bg-gray-800 text-gray-300 hover:border-sky-500 text-left h-auto py-2 px-3"
               onClick={() => handleSend(question)}
             >
               {question}
@@ -75,7 +76,6 @@ export const Hero = () => {
               ))}
             </ScrollArea>
 
-            
             <div className="relative">
               <Input
                 type="text"
@@ -89,24 +89,24 @@ export const Hero = () => {
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
+                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
                   onClick={() => fileInputRef.current?.click()}
                 >
-                  <Paperclip className="h-4 w-4 text-gray-300" />
+                  <Paperclip className="h-4 w-4 text-gray-300 group-hover:text-white" />
                   <span className="sr-only">Upload file</span>
                 </Button>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
+                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
                 >
-                  <Mic className="h-4 w-4 text-gray-300" />
+                  <Mic className="h-4 w-4 text-gray-300 group-hover:text-white" />
                   <span className="sr-only">Voice input</span>
                 </Button>
                 <Button
                   size="icon"
                   variant="ghost"
-                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-gray-600"
+                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
                   onClick={() => handleSend()}
                 >
                   <ArrowUp className="h-4 w-4 text-white" />
