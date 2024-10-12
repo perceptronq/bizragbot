@@ -4,6 +4,8 @@ import { Input } from "@/components/Input"
 import { Card, CardContent } from "@/components/Card"
 import { ScrollArea } from "@/components/ScrollArea"
 import { Mic, ArrowUp, Bot, User, Paperclip } from "lucide-react"
+import axios from 'axios';
+
 
 const exampleQuestions = [
   "What is the weather in San Francisco?",
@@ -17,14 +19,18 @@ export const Hero = () => {
 
   const handleSend = (message: string = input) => {
     if (message.trim()) {
-      setMessages([...messages, { role: 'user', content: message }])
-      setInput('')
-      // replace with actual API call 
-      setTimeout(() => {
-        setMessages(prev => [...prev, { role: 'assistant', content: `Here's a response to "${message}"` }])
-      }, 1000)
+      setMessages([...messages, { role: 'user', content: message }]);
+      setInput('');
+
+      // Make API call to Flask API
+      axios.post('http://localhost:8080/', { message })
+        .then(response => {
+          const apiResponse = response.data;
+          setMessages(prev => [...prev, { role: 'assistant', content: apiResponse }]);
+        })
+        .catch(error => console.error(error));
     }
-  }
+  };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -56,23 +62,20 @@ export const Hero = () => {
           <CardContent className="p-4">
             <ScrollArea className="h-[300px] mb-4">
               {messages.map((message, index) => (
-                <div
-                  key={index}
-                  className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  <div
-                    className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}
-                  >
+                <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
                     <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
                       {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                     </div>
                     <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                      {message.content}
+                      {message.content.text} {/* Access the text property of the message.content object */}
                     </span>
                   </div>
                 </div>
               ))}
             </ScrollArea>
+
+            
             <div className="relative">
               <Input
                 type="text"
