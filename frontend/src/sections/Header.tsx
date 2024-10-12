@@ -1,38 +1,31 @@
 import Link from 'next/link';
+import Image from 'next/image';
+import logo from '../assets/logo.png';
 
 export const Header = () => {
     return (
         <header className="px-4 lg:px-6 h-14 flex items-center">
             <Link className="flex items-center justify-center" href="#">
                 <span className="sr-only">Bizrag Bot</span>
-                <svg
-                    className="h-6 w-6"
-                    fill="none"
-                    height="24"
-                    stroke="currentColor"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    viewBox="0 0 24 24"
-                    width="24"
-                    xmlns="http://www.w3.org/2000/svg"
-                >
-                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-                </svg>
-                <span className="ml-2 text-lg font-semibold">Bizrag Bot</span>
+                <Image
+                    src={logo}
+                    alt="Bizrag Bot Logo"
+                    width={32}
+                    height={32}
+                    quality={100}
+                    className="h-10 w-10"
+                    priority
+                />
+                <span className="ml-2 text-xl font-semibold">Bizrag Bot</span>
             </Link>
             <nav className="ml-auto flex gap-4 sm:gap-6">
                 <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
-                    Features
+                    Sign up
                 </Link>
                 <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
-                    Pricing
-                </Link>
-                <Link className="text-sm font-medium hover:underline underline-offset-4" href="#">
-                    About
+                    Login
                 </Link>
             </nav>
         </header>
     );
 };
-
