@@ -8,8 +8,8 @@ import axios from 'axios';
 
 
 const exampleQuestions = [
-  "What is the weather in San Francisco?",
-  "Answer like I'm 5, why is the sky blue?"
+  "Tesla sales in Q3",
+  "Predicted stock price of Apple in 2025",
 ]
 
 export const Hero = () => {
@@ -44,7 +44,7 @@ export const Hero = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-4">
         <h1 className="text-xl md:text-4xl font-bold text-white text-center mb-8">
-          Revolutionizing Customer Interactions with Intelligent AI
+          Unleash the Full Potential of Your Business Data with Intelligent AI <div>💯🚀🎯</div>
         </h1>
         <div className="grid grid-cols-2 gap-2 mb-4">
           {exampleQuestions.map((question, index) => (
