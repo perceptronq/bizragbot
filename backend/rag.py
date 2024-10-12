@@ -1,6 +1,7 @@
 import pickle
 import os
 from retriever import FAISSRetriever
+from pipeline import RAGPipeline
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -73,15 +74,14 @@ if pages:
 
     # Create the retriever
     retriever = FAISSRetriever(chunks, embedding_model)
+    
+    rag_pipeline = RAGPipeline(retriever, model_name="google/flan-t5-large")
 
     # Example usage
-    query = "what are total unit sales of year 2?"
-    similar_chunks = retriever.retrieve(query, k=3)
+    query = "What are the total unit sales of year 2?"
+    answer = rag_pipeline.answer(query)
 
-    # Print out the top results
-    for i, (chunk, distance) in enumerate(similar_chunks):
-        print(f"Result {i + 1}:")
-        print(f"Chunk content: {chunk}")
-        print(f"Similarity Score (L2 distance): {distance}\n")
+    print(f"Question: {query}")
+    print(f"Answer: {answer}")
 else:
     print("No pages were processed from the PDF.")
