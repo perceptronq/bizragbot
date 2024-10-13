@@ -3,16 +3,19 @@ import Image from 'next/image';
 import { useSession } from '../lib/useSession';
 import { supabase } from '../lib/supabaseClient';
 import logo from '../assets/logo.png';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 
 export const Header: React.FC = () => {
     const user = useSession();
     const router = useRouter();
+    const pathname = usePathname();
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
         router.push('/login');
     };
+
+    const isDashboard = pathname === '/dashboard';
 
     return (
         <header className="px-4 lg:px-6 h-14 flex items-center sticky top-0 bg-black border-b border-gray-800 z-50">
@@ -29,7 +32,11 @@ export const Header: React.FC = () => {
                     </>
                 ) : (
                     <>
-                        <Link className="text-sm font-medium hover:underline" href="/dashboard">Dashboard</Link>
+                        {isDashboard ? (
+                            <Link className="text-sm font-medium hover:underline" href="/">Home</Link>
+                        ) : (
+                            <Link className="text-sm font-medium hover:underline" href="/dashboard">Dashboard</Link> 
+                        )}
                         <button className="text-sm font-medium hover:underline" onClick={handleLogout}>Logout</button>
                     </>
                 )}
