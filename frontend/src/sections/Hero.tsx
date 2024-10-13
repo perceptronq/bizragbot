@@ -59,6 +59,14 @@ export const Hero = () => {
     }
   };
 
+  const sectionRef = useRef(null);
+
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start end', 'end start']
+  })
+
+  const backgroundPositionY = useTransform(scrollYProgress, [0, 1], [-300, 300]);
 
   return (
     <motion.section
