@@ -1,8 +1,12 @@
 # Bizrag Bot
 
-[Demo Link](https://bizrag-bot.vercel.app)
+https://bizrag-bot.vercel.app
 
 ## Installation
 
-`npm install`
-`npm run dev`
+```
+npm install
+```
+```
+npm run dev
+```
