@@ -1,6 +1,8 @@
+"use client";
+
 import { useSession } from '../../lib/useSession';
 
-export const Dashboard: React.FC = () => {
+const Dashboard: React.FC = () => {
     const user = useSession();
 
     return (
@@ -9,8 +11,10 @@ export const Dashboard: React.FC = () => {
             {user ? (
                 <p>Welcome, {user.email}</p>
             ) : (
-                <p>Please log in to see your dashboard.</p>
+                <p>Please log in to see your dashboard. You're missing out!</p>
             )}
         </div>
     );
 };
+
+export default Dashboard;

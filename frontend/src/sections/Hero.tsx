@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useRef } from 'react';
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
@@ -22,29 +24,21 @@ export const Hero = () => {
 
   const handleSend = (message: string = input) => {
     if (message.trim()) {
-      // Add user message to chat
       setMessages([...messages, { role: 'user', content: message }]);
       setInput('');
 
-      // Make API call to Flask backend
       axios.post('http://localhost:8080/', { message })
         .then(response => {
-          // If the response is an object, ensure you access the `text` field or correct property
           const apiResponse = response.data.text; // Access the `text` field here
-
-          // Add the assistant's message to chat
           setMessages(prev => [...prev, { role: 'assistant', content: apiResponse }]);
         })
         .catch(error => console.error(error));
     }
   };
 
-
-
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      // handle file upload here
       setMessages([...messages, { role: 'user', content: `File uploaded: ${file.name}` }]);
     }
   };
@@ -56,82 +50,87 @@ export const Hero = () => {
           {user ? `Welcome back, ${user.email}` : 'Unleash the Full Potential of Your Business Data with Intelligent AI'}
           <div>💯🚀🎯</div>
         </h1>
-        <div className="grid grid-cols-2 gap-2 mb-4">
-          {exampleQuestions.map((question, index) => (
-            <Button
-              key={index}
-              variant="outline"
-              className="bg-gray-800 text-gray-300 hover:border-sky-500 text-left h-auto py-2 px-3"
-              onClick={() => handleSend(question)}
-            >
-              {question}
-            </Button>
-          ))}
-        </div>
-        <Card className="bg-gray-800 border-gray-700">
-          <CardContent className="p-4">
-            <ScrollArea className="h-[300px] mb-4">
-              {messages.map((message, index) => (
-                <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
-                    <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
-                      {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
-                    </div>
-                    <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                      {/* {message.content.text} */} {/* Access the text property of the message.content object */}
-                      {message.content}
-                    </span>
-                  </div>
-                </div>
+        {user ? (
+          <>
+            <div className="grid grid-cols-2 gap-2 mb-4">
+              {exampleQuestions.map((question, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  className="bg-gray-800 text-gray-300 hover:border-sky-500 text-left h-auto py-2 px-3"
+                  onClick={() => handleSend(question)}
+                >
+                  {question}
+                </Button>
               ))}
-            </ScrollArea>
-
-            <div className="relative">
-              <Input
-                type="text"
-                placeholder="Send a message..."
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                className="w-full bg-gray-800 text-gray-100 border-gray-700 focus:ring-sky-500 focus:border-sky-500 pr-28"
-              />
-              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
-                  onClick={() => fileInputRef.current?.click()}
-                >
-                  <Paperclip className="h-4 w-4 text-gray-300 group-hover:text-white" />
-                  <span className="sr-only">Upload file</span>
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
-                >
-                  <Mic className="h-4 w-4 text-gray-300 group-hover:text-white" />
-                  <span className="sr-only">Voice input</span>
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
-                  onClick={() => handleSend()}
-                >
-                  <ArrowUp className="h-4 w-4 text-white" />
-                  <span className="sr-only">Send message</span>
-                </Button>
-              </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleFileUpload}
-                className="hidden"
-              />
             </div>
-          </CardContent>
-        </Card>
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-4">
+                <ScrollArea className="h-[300px] mb-4">
+                  {messages.map((message, index) => (
+                    <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                      <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
+                        <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
+                          {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+                        </div>
+                        <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
+                          {message.content}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </ScrollArea>
+
+                <div className="relative">
+                  <Input
+                    type="text"
+                    placeholder="Send a message..."
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+                    className="w-full bg-gray-800 text-gray-100 border-gray-700 focus:ring-sky-500 focus:border-sky-500 pr-28"
+                  />
+                  <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <Paperclip className="h-4 w-4 text-gray-300 group-hover:text-white" />
+                      <span className="sr-only">Upload file</span>
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
+                    >
+                      <Mic className="h-4 w-4 text-gray-300 group-hover:text-white" />
+                      <span className="sr-only">Voice input</span>
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
+                      onClick={() => handleSend()}
+                    >
+                      <ArrowUp className="h-4 w-4 text-white" />
+                      <span className="sr-only">Send message</span>
+                    </Button>
+                  </div>
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        ) : (
+          <p className="text-white">Please log in to chat. You're missing out!</p>
+        )}
       </div>
     </div>
   );
