@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Card, CardContent } from "@/components/Card";
 import { ScrollArea } from "@/components/ScrollArea";
-import { Mic, ArrowUp, Bot, User, Paperclip } from "lucide-react";
+import { ArrowUp, Bot, User, Paperclip } from "lucide-react";
 import axios from 'axios';
 import { useSession } from '../lib/useSession';
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -81,8 +81,7 @@ export const Hero = () => {
                 {exampleQuestions.map((question, index) => (
                   <Button
                   key={index}
-                  variant="outline"
-                  className="bg-gray-800 text-gray-300 hover:border-sky-500 hover:text-white text-left h-auto py-2 px-3"
+                  className="border border-gray-700 hover:border-sky-500 text-left h-auto py-2 px-3"
                   onClick={() => handleSend(question)}
                 >
                   {question}
@@ -118,8 +117,7 @@ export const Hero = () => {
                     <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex space-x-2">
                       <Button
                         size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
+                        className="h-8 w-8 rounded-full"
                         onClick={() => fileInputRef.current?.click()}
                       >
                         <Paperclip className="h-4 w-4 text-gray-300 group-hover:text-white" />
@@ -127,17 +125,7 @@ export const Hero = () => {
                       </Button>
                       <Button
                         size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
-                      >
-                        <Mic className="h-4 w-4 text-gray-300 group-hover:text-white" />
-                        <span className="sr-only">Voice input</span>
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 rounded-full bg-gray-700 hover:bg-sky-500 transition-colors duration-200"
-                        onClick={() => handleSend()}
+                        className="h-8 w-8 rounded-full"
                       >
                         <ArrowUp className="h-4 w-4 text-white" />
                         <span className="sr-only">Send message</span>

@@ -17,7 +17,7 @@ export const Button: React.FC<ButtonProps> = ({
   const baseClasses = "inline-flex items-center justify-center rounded-md font-medium focus:outline-none focus:ring-2 transition"
   
   const variantClasses = {
-    default: "bg-sky-500 text-white hover:bg-sky-500",
+    default: "bg-gray-800 text-gray-300 hover:text-white hover:bg-sky-500",
     outline: "bg-transparent border border-zinc-700 text-zinc-300 hover:bg-zinc-700",
     ghost: "bg-transparent text-zinc-300 hover:bg-zinc-700"
   }
