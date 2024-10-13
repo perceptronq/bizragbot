@@ -10,3 +10,8 @@ npm install
 ```
 npm run dev
 ```
+
+## Login Credentials
+
+Username: <test@bizrag.com>
+Password: 123456

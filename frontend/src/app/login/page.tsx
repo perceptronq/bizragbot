@@ -3,6 +3,8 @@
 import { useState } from 'react';
 import { signIn } from '../../lib/auth';
 import { useRouter } from 'next/navigation';
+import { Header } from '@/sections/Header'; 
+import { Footer } from '@/sections/Footer'; 
 
 const Login: React.FC = () => {
     const [email, setEmail] = useState<string>('');
@@ -15,18 +17,41 @@ const Login: React.FC = () => {
         if (error) {
             setError(error);
         } else {
-            console.log('Login successful', user);
-            router.push('/dashboard'); 
+            console.log('Login Successful', user);
+            router.push('/');
         }
     };
 
     return (
-        <div>
-            <h2>Login</h2>
-            <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button onClick={handleLogin}>Log In</button>
-            {error && <p>{error}</p>}
+        <div className="flex flex-col min-h-screen">
+            <Header />
+            <main className="flex-grow flex items-center justify-center">
+                <div className="w-full max-w-md p-4 space-y-4">
+                    <h2 className="text-2xl font-semibold text-center">Bizrag Bot</h2>
+                    <input
+                        className="w-full p-2 border text-black border-gray-700 rounded"
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+                    <input
+                        className="w-full p-2 border text-black border-gray-700 rounded"
+                        type="password"
+                        placeholder="Password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    <button
+                        className="w-full py-2 bg-sky-500 text-white font-bold rounded hover:bg-sky-600"
+                        onClick={handleLogin}
+                    >
+                        Login
+                    </button>
+                    {error && <p className="text-red-500 text-center">{error}</p>}
+                </div>
+            </main>
+            <Footer />
         </div>
     );
 };
