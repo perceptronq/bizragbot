@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/Card";
 import { ScrollArea } from "@/components/ScrollArea";
 import { Mic, ArrowUp, Bot, User, Paperclip } from "lucide-react";
 import axios from 'axios';
+import { useSession } from '../lib/useSession';
 
 const exampleQuestions = [
   "Tesla sales projections for Q4 2024",
@@ -14,6 +15,7 @@ const exampleQuestions = [
 ];
 
 export const Hero = () => {
+  const user = useSession();
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [input, setInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -23,21 +25,21 @@ export const Hero = () => {
       // Add user message to chat
       setMessages([...messages, { role: 'user', content: message }]);
       setInput('');
-  
+
       // Make API call to Flask backend
       axios.post('http://localhost:8080/', { message })
         .then(response => {
           // If the response is an object, ensure you access the `text` field or correct property
           const apiResponse = response.data.text; // Access the `text` field here
-          
+
           // Add the assistant's message to chat
           setMessages(prev => [...prev, { role: 'assistant', content: apiResponse }]);
         })
         .catch(error => console.error(error));
     }
   };
-  
-  
+
+
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -51,7 +53,8 @@ export const Hero = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-2xl space-y-4">
         <h1 className="text-xl md:text-4xl font-bold text-white text-center mb-8">
-          Unleash the Full Potential of Your Business Data with Intelligent AI <div>💯🚀🎯</div>
+          {user ? `Welcome back, ${user.email}` : 'Unleash the Full Potential of Your Business Data with Intelligent AI'}
+          <div>💯🚀🎯</div>
         </h1>
         <div className="grid grid-cols-2 gap-2 mb-4">
           {exampleQuestions.map((question, index) => (
@@ -75,7 +78,7 @@ export const Hero = () => {
                       {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                     </div>
                     <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                     {/* {message.content.text} */} {/* Access the text property of the message.content object */} 
+                      {/* {message.content.text} */} {/* Access the text property of the message.content object */}
                       {message.content}
                     </span>
                   </div>
