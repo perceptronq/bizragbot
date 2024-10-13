@@ -28,10 +28,10 @@ export const Hero = () => {
     if (message.trim()) {
       setMessages([...messages, { role: 'user', content: message }]);
       setInput('');
-
-      axios.post('http://localhost:8080/', { message })
+  
+      axios.post('http://localhost:5000/query', { query: message })
         .then(response => {
-          const apiResponse = response.data.text; // Access the `text` field here
+          const apiResponse = response.data.answer; // Access the `answer` field here
           setMessages(prev => [...prev, { role: 'assistant', content: apiResponse }]);
         })
         .catch(error => console.error(error));
@@ -42,17 +42,23 @@ export const Hero = () => {
     const file = event.target.files?.[0];
     if (file) {
       setMessages([...messages, { role: 'user', content: `File uploaded: ${file.name}` }]);
+      
+      const formData = new FormData();
+      formData.append('file', file);
+      
+      axios.post('http://localhost:5000/upload', formData)
+        .then(response => {
+          // Handle the response from the backend API
+          console.log(response);
+          setMessages(prev => [...prev, { role: 'assistant', content: "File processed successfully. You can now ask questions about its content." }]);
+        })
+        .catch(error => {
+          console.error(error);
+          setMessages(prev => [...prev, { role: 'assistant', content: "Error processing the file. Please try again." }]);
+        });
     }
   };
 
-  const sectionRef = useRef(null);
-
-  const { scrollYProgress } = useScroll({
-    target: sectionRef,
-    offset: ['start end', 'end start']
-  })
-
-  const backgroundPositionY = useTransform(scrollYProgress, [0, 1], [-300, 300]);
 
   return (
     <motion.section
