@@ -85,21 +85,25 @@ export const Hero = () => {
     >
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <div className="w-full max-w-2xl space-y-4">
-          <h1 className="text-xl md:text-4xl font-bold text-white text-center mb-8">
-            {user ? `Welcome back, ${user.email}` : 'Unleash the Full Potential of Your Business Data with Intelligent AI'}
-            <div>💯🚀🎯</div>
+          <h1 className={`font-bold text-center mb-8 ${user ? 'text-md text-white' : 'text-xl md:text-4xl text-white'}`}>
+            {user ? `Welcome, ${user.email}` : 'Unleash the Full Potential of Your Business Data with Intelligent AI'}
           </h1>
+          {!user && (
+            <div className="text-center text-xl md:text-4xl mb-4">
+              💯🚀🎯
+            </div>
+          )}
           {user ? (
             <>
               <div className="grid grid-cols-2 gap-2 mb-4">
                 {exampleQuestions.map((question, index) => (
                   <Button
-                  key={index}
-                  className="border border-gray-700 hover:border-sky-500 text-left h-auto py-2 px-3"
-                  onClick={() => handleSend(question)}
-                >
-                  {question}
-                </Button>
+                    key={index}
+                    className="border border-gray-700 hover:border-sky-500 text-left h-auto py-2 px-3"
+                    onClick={() => handleSend(question)}
+                  >
+                    {question}
+                  </Button>
                 ))}
               </div>
               <Card className="bg-gray-800 border-gray-700">
@@ -156,7 +160,24 @@ export const Hero = () => {
               </Card>
             </>
           ) : (
-            <p className="text-white">Please log in to chat.</p>
+            <div className='pt-12'>
+              <Card className="bg-gray-800 border-gray-700 p-6">
+                <CardContent className="text-center">
+                  <p className="text-gray-200 mb-4 tracking-tighter">
+                    Please Login to Start Chatting and Exploring Insights!
+                  </p>
+                  <Button
+                    className="bg-sky-500 hover:bg-sky-600 text-white mb-4"
+                    onClick={() => { window.location.href = '/login'; }}
+                  >
+                    Log In
+                  </Button>
+                  <p className="text-gray-300 tracking-tighter">
+                    Don&apos;t have an account? <a href="/signup" className="text-sky-500 hover:underline">Sign up</a>
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
           )}
         </div>
       </div>
