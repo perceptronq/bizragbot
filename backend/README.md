@@ -3,7 +3,7 @@
 ## To-do
 
 - [ ] display logo
-- [ ] user auth
+- [x] user auth
 - [ ] chat history
 
 ## Installation
