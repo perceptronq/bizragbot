@@ -11,7 +11,7 @@ const Dashboard: React.FC = () => {
             {user ? (
                 <p>Welcome, {user.email}</p>
             ) : (
-                <p>Please log in to see your dashboard. You're missing out!</p>
+                <p>Please log in to see your dashboard.</p>
             )}
         </div>
     );

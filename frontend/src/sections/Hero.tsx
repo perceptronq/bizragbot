@@ -129,7 +129,7 @@ export const Hero = () => {
             </Card>
           </>
         ) : (
-          <p className="text-white">Please log in to chat. You're missing out!</p>
+          <p className="text-white">Please log in to chat.</p>
         )}
       </div>
     </div>

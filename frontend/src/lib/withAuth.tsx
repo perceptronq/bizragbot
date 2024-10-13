@@ -11,7 +11,7 @@ export const withAuth = (WrappedComponent: React.ComponentType) => {
       if (!user) {
         router.push('/login');
       }
-    }, [user]);
+    }, [user, router]); 
 
     if (!user) {
       return <div>Loading...</div>;
