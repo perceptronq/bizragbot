@@ -1,11 +1,5 @@
 # Bizrag Bot
 
-## To-do
-
-- [ ] display logo
-- [x] user auth
-- [ ] chat history
-
 ## Installation
 
 ```
