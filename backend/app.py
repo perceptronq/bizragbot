@@ -80,12 +80,12 @@ def initialize_rag(file_path):
             chunks.extend(text_splitter.split_text(page))
 
         # Embedding
-        embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+        embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
 
         # Create the retriever
         retriever = FAISSRetriever(chunks, embedding_model)
         
-        rag_pipeline = RAGPipeline(retriever, model_name="google/flan-t5-large")
+        rag_pipeline = RAGPipeline(retriever, model_name="meta-llama/Llama-2-7b-chat-hf")
         return True
     else:
         print("No pages were processed from the PDF.")
