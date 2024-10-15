@@ -22,6 +22,12 @@ const Signup: React.FC = () => {
         }
     };
 
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === 'Enter') {
+            handleSignup();
+        }
+    };
+
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
@@ -34,6 +40,7 @@ const Signup: React.FC = () => {
                         placeholder="Email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
                     <input
                         className="w-full p-2 border text-black border-gray-700 rounded"
@@ -41,6 +48,7 @@ const Signup: React.FC = () => {
                         placeholder="Password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        onKeyDown={handleKeyDown}
                     />
                     <button
                         className="w-full py-2 bg-sky-500 text-white font-semibold rounded hover:bg-sky-600"

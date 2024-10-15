@@ -170,7 +170,7 @@ export const Hero = () => {
                     className="bg-sky-500 hover:bg-sky-600 text-white mb-4"
                     onClick={() => { window.location.href = '/login'; }}
                   >
-                    Log In
+                    Login
                   </Button>
                   <p className="text-gray-300 tracking-tighter">
                     Don&apos;t have an account? <a href="/signup" className="text-sky-500 hover:underline">Sign up</a>
