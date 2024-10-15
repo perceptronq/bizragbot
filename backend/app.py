@@ -85,7 +85,7 @@ def initialize_rag(file_path):
         # Create the retriever
         retriever = FAISSRetriever(chunks, embedding_model)
         
-        rag_pipeline = RAGPipeline(retriever, model_name="meta-llama/Llama-2-7b-chat-hf")
+        rag_pipeline = RAGPipeline(retriever, model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
         return True
     else:
         print("No pages were processed from the PDF.")

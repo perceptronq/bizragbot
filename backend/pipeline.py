@@ -4,11 +4,11 @@ import torch
 from huggingface_hub import login
 
 class RAGPipeline:
-    def __init__(self, retriever, model_name="meta-llama/Llama-2-7b-chat-hf", max_length=1024):
+    def __init__(self, retriever, model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0", max_length=1024):
         login(token = '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')
         self.retriever = retriever
         self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto")
+        self.model = AutoModelForCausalLM.from_pretrained(model_name, return_dict=True,low_cpu_mem_usage=True,torch_dtype=torch.float16,device_map="auto",trust_remote_code=True,)
         self.max_length = max_length
         self.generator = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, max_length=self.max_length)
 
@@ -36,3 +36,4 @@ class RAGPipeline:
         context = self._format_context(retrieved_chunks)
         response = self._generate_answer(context, query)
         return response
+
