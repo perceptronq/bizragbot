@@ -5,7 +5,7 @@ import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Card, CardContent } from "@/components/Card";
 import { ScrollArea } from "@/components/ScrollArea";
-import { ArrowUp, Bot, User, Paperclip } from "lucide-react";
+import { ArrowUp, Bot, User, Paperclip, RefreshCw } from "lucide-react";
 import axios from 'axios';
 import { useSession } from '../lib/useSession';
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -22,7 +22,10 @@ const exampleQuestions = [
 export const Hero = () => {
   const user = useSession();
   const [messages, setMessages] = useState<Array<{ role: string; content: string }>>([]);
+  const [displayMessages, setDisplayMessages] = useState<Array<{ role: string; content: string }>>([]);
   const [input, setInput] = useState('');
+  const [isCleared, setIsCleared] = useState(false);
+  const [clearTimestamp, setClearTimestamp] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -42,9 +45,17 @@ export const Hero = () => {
       if (error) {
         console.error("Error fetching chat history:", error);
       } else if (data) {
-        setMessages(data.map(item => ({ role: item.role, content: item.content })));
+        const chatMessages = data.map(item => ({ role: item.role, content: item.content }));
+        setMessages(chatMessages);
+        setDisplayMessages(chatMessages);
       }
     }
+  };
+
+  const handleClearChat = () => {
+    setDisplayMessages([]);
+    setIsCleared(true);
+    setClearTimestamp(Date.now());
   };
 
   const saveChatMessage = async (role: string, content: string, chatType: 'user' | 'rag') => {
@@ -69,7 +80,14 @@ export const Hero = () => {
   const handleSend = async (message: string = input) => {
     if (message.trim() && user) {
       const userMessage = { role: 'user', content: message };
-      setMessages(prev => [...prev, userMessage]);
+      
+      if (isCleared) {
+        setDisplayMessages(prev => [...prev, userMessage]);
+      } else {
+        setMessages(prev => [...prev, userMessage]);
+        setDisplayMessages(prev => [...prev, userMessage]);
+      }
+      
       setInput('');
       await saveChatMessage('user', message, 'user');
 
@@ -77,7 +95,14 @@ export const Hero = () => {
         const response = await axios.post('http://localhost:5000/query', { query: message });
         const apiResponse = response.data.answer;
         const assistantMessage = { role: 'assistant', content: apiResponse };
-        setMessages(prev => [...prev, assistantMessage]);
+        
+        if (isCleared) {
+          setDisplayMessages(prev => [...prev, assistantMessage]);
+        } else {
+          setMessages(prev => [...prev, assistantMessage]);
+          setDisplayMessages(prev => [...prev, assistantMessage]);
+        }
+        
         await saveChatMessage('assistant', apiResponse, 'rag');
       } catch (error) {
         console.error(error);
@@ -88,7 +113,14 @@ export const Hero = () => {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      setMessages([...messages, { role: 'user', content: `File uploaded: ${file.name}` }]);
+      const fileMessage = { role: 'user', content: `File uploaded: ${file.name}` };
+      
+      if (isCleared) {
+        setDisplayMessages([fileMessage]);
+      } else {
+        setMessages(prev => [...prev, fileMessage]);
+        setDisplayMessages(prev => [...prev, fileMessage]);
+      }
       
       const formData = new FormData();
       formData.append('file', file);
@@ -96,11 +128,25 @@ export const Hero = () => {
       axios.post('http://localhost:5000/upload', formData)
         .then(response => {
           console.log(response);
-          setMessages(prev => [...prev, { role: 'assistant', content: "File processed successfully. You can now ask questions about its content." }]);
+          const successMessage = { role: 'assistant', content: "File processed Successfully. You can now ask questions about its content." };
+          
+          if (isCleared) {
+            setDisplayMessages(prev => [...prev, successMessage]);
+          } else {
+            setMessages(prev => [...prev, successMessage]);
+            setDisplayMessages(prev => [...prev, successMessage]);
+          }
         })
         .catch(error => {
           console.error(error);
-          setMessages(prev => [...prev, { role: 'assistant', content: "Error processing the file. Please try again." }]);
+          const errorMessage = { role: 'assistant', content: "Error processing the file. Please try again." };
+          
+          if (isCleared) {
+            setDisplayMessages(prev => [...prev, errorMessage]);
+          } else {
+            setMessages(prev => [...prev, errorMessage]);
+            setDisplayMessages(prev => [...prev, errorMessage]);
+          }
         });
     }
   };
@@ -154,19 +200,37 @@ export const Hero = () => {
               </div>
               <Card className="bg-gray-800 border-gray-700">
                 <CardContent className="p-4">
+                  <div className="justify-between items-right mb-2">
+                    <Button
+                      size="icon"
+                      className="text-gray-300 hover:text-white"
+                      onClick={handleClearChat}
+                    >
+                      <RefreshCw className="h-4 w-4 mr-2" />
+                      Clear
+                    </Button>
+                  </div>
                   <ScrollArea className="h-[300px] mb-4">
-                    {messages.map((message, index) => (
-                      <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
-                          <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
-                            {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
-                          </div>
-                          <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                            {message.content}
-                          </span>
-                        </div>
+                    {displayMessages.length === 0 ? (
+                      <div className="text-center text-gray-400 mt-4">
+                        {isCleared 
+                          ? "Chat Cleared. Send a Message to start a new Conversation." 
+                          : "No Messages yet. Start a Conversation!"}
                       </div>
-                    ))}
+                    ) : (
+                      displayMessages.map((message, index) => (
+                        <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                          <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
+                            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
+                              {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+                            </div>
+                            <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
+                              {message.content}
+                            </span>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </ScrollArea>
 
                   <div className="relative">
