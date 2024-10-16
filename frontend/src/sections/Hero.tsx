@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Button } from "@/components/Button";
 import { Input } from "@/components/Input";
 import { Card, CardContent } from "@/components/Card";
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { useSession } from '../lib/useSession';
 import { motion, useScroll, useTransform } from "framer-motion";
 import starsBg from '@/assets/stars.png';
+import { supabase } from '../lib/supabaseClient';
 
 const exampleQuestions = [
   "Tesla sales projections for Q4 2024",
@@ -24,17 +25,58 @@ export const Hero = () => {
   const [input, setInput] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleSend = (message: string = input) => {
-    if (message.trim()) {
-      setMessages([...messages, { role: 'user', content: message }]);
+  useEffect(() => {
+    if (user) {
+      fetchChatHistory();
+    }
+  }, [user]);
+
+  const fetchChatHistory = async () => {
+    if (user) {
+      const { data, error } = await supabase
+        .from('chat_history')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error("Error fetching chat history:", error);
+      } else if (data) {
+        setMessages(data.map(item => ({ role: item.role, content: item.content })));
+      }
+    }
+  };
+
+  const saveChatMessage = async (role: string, content: string) => {
+    if (user) {
+      const { error } = await supabase
+        .from('chat_history')
+        .insert([
+          { user_id: user.id, role, content }
+        ]);
+
+      if (error) {
+        console.error("Error saving chat message:", error);
+      }
+    }
+  };
+
+  const handleSend = async (message: string = input) => {
+    if (message.trim() && user) {
+      const userMessage = { role: 'user', content: message };
+      setMessages(prev => [...prev, userMessage]);
       setInput('');
-  
-      axios.post('http://localhost:5000/query', { query: message })
-        .then(response => {
-          const apiResponse = response.data.answer; // Access the `answer` field here
-          setMessages(prev => [...prev, { role: 'assistant', content: apiResponse }]);
-        })
-        .catch(error => console.error(error));
+      await saveChatMessage('user', message);
+
+      try {
+        const response = await axios.post('http://localhost:5000/query', { query: message });
+        const apiResponse = response.data.answer;
+        const assistantMessage = { role: 'assistant', content: apiResponse };
+        setMessages(prev => [...prev, assistantMessage]);
+        await saveChatMessage('assistant', apiResponse);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -48,7 +90,6 @@ export const Hero = () => {
       
       axios.post('http://localhost:5000/upload', formData)
         .then(response => {
-          // Handle the response from the backend API
           console.log(response);
           setMessages(prev => [...prev, { role: 'assistant', content: "File processed successfully. You can now ask questions about its content." }]);
         })
@@ -144,6 +185,7 @@ export const Hero = () => {
                       <Button
                         size="icon"
                         className="h-8 w-8 rounded-full"
+                        onClick={() => handleSend()}
                       >
                         <ArrowUp className="h-4 w-4 text-white" />
                         <span className="sr-only">Send message</span>
