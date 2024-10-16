@@ -1,39 +1,51 @@
-from typing import List, Tuple    
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-import torch
-from huggingface_hub import login
+import google.generativeai as genai
+from typing import List, Tuple
+import os
+from config import GOOGLE_API_KEY
 
 class RAGPipeline:
-    def __init__(self, retriever, model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0", max_length=1024):
-        login(token = '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')
+    def __init__(self, retriever, model_name="gemini-pro", max_length=1024, temperature=0.7):
+        genai.configure(api_key=GOOGLE_API_KEY)
         self.retriever = retriever
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
-        self.model = AutoModelForCausalLM.from_pretrained(model_name, return_dict=True,low_cpu_mem_usage=True,torch_dtype=torch.float16,device_map="auto",trust_remote_code=True,)
+        self.model = genai.GenerativeModel(model_name)
         self.max_length = max_length
-        self.generator = pipeline("text-generation", model=self.model, tokenizer=self.tokenizer, max_length=self.max_length)
+        self.temperature = temperature
 
     def _format_context(self, retrieved_chunks: List[Tuple[str, float]]) -> str:
         return "\n\n".join([chunk for chunk, _ in retrieved_chunks])
 
     def _generate_answer(self, context: str, question: str) -> str:
         prompt = f"""
-        [INST] You are an AI assistant tasked with answering questions based on the provided context. 
-        Please provide a detailed and informative answer to the question.
-        
+        You are an innovative AI assistant with a talent for creative problem-solving and insightful predictions. Your task is to provide detailed, imaginative, and well-reasoned responses based on the given context and question. When making predictions or suggesting improvements, think outside the box and consider multiple perspectives.
+
+        Guidelines:
+        1. Be specific and provide multiple detailed suggestions or predictions.
+        2. Consider both short-term and long-term implications.
+        3. If relevant, include potential risks and mitigation strategies.
+        4. Use data from the context to support your ideas, but don't be afraid to extrapolate creatively.
+        5. If appropriate, suggest innovative approaches that might not be immediately obvious.
+
         Context:
         {context}
 
         Question: {question}
 
-        Answer: [/INST]
+        Creative and Insightful Answer:
         """
 
-        response = self.generator(prompt, max_new_tokens=self.max_length, do_sample=True, temperature=0.7, top_p=0.95)
-        return response[0]['generated_text'].split("[/INST]")[-1].strip()
+        response = self.model.generate_content(
+            prompt,
+            generation_config=genai.types.GenerationConfig(
+                max_output_tokens=self.max_length,
+                temperature=self.temperature,
+                top_p=0.95,
+                top_k=40
+            )
+        )
+        return response.text
 
     def answer(self, query: str, k: int = 5) -> str:
         retrieved_chunks = self.retriever.retrieve(query, k)
         context = self._format_context(retrieved_chunks)
         response = self._generate_answer(context, query)
         return response
-
