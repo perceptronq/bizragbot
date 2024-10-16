@@ -47,12 +47,17 @@ export const Hero = () => {
     }
   };
 
-  const saveChatMessage = async (role: string, content: string) => {
+  const saveChatMessage = async (role: string, content: string, chatType: 'user' | 'rag') => {
     if (user) {
       const { error } = await supabase
         .from('chat_history')
         .insert([
-          { user_id: user.id, role, content }
+          { 
+            user_id: user.id, 
+            role, 
+            content, 
+            chat_type: chatType 
+          }
         ]);
 
       if (error) {
@@ -66,14 +71,14 @@ export const Hero = () => {
       const userMessage = { role: 'user', content: message };
       setMessages(prev => [...prev, userMessage]);
       setInput('');
-      await saveChatMessage('user', message);
+      await saveChatMessage('user', message, 'user');
 
       try {
         const response = await axios.post('http://localhost:5000/query', { query: message });
         const apiResponse = response.data.answer;
         const assistantMessage = { role: 'assistant', content: apiResponse };
         setMessages(prev => [...prev, assistantMessage]);
-        await saveChatMessage('assistant', apiResponse);
+        await saveChatMessage('assistant', apiResponse, 'rag');
       } catch (error) {
         console.error(error);
       }
