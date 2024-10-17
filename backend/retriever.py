@@ -23,3 +23,7 @@ class FAISSRetriever:
         distances, indices = self.index.search(query_embedding_np, k)
         results = [(self.chunks[i], distances[0][idx]) for idx, i in enumerate(indices[0])]
         return results
+
+    def get_relevant_documents(self, query: str, k: int = 5) -> List[str]:
+        results = self.retrieve(query, k)
+        return [doc for doc, _ in results]
