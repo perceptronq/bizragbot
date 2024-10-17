@@ -4,19 +4,50 @@ from flask_cors import CORS
 import pickle
 import os
 from retriever import FAISSRetriever
-from pipeline import RAGPipeline
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 import unstructured_client
 from unstructured_client.models import operations, shared
 from config import api_key_auth, server_url
-import google.generativeai as genai
+import requests
 
 app = Flask(__name__)
 CORS(app)
 
 retriever = None
 rag_pipeline = None
+
+# LM Studio settings
+LM_STUDIO_URL = "http://localhost:1234/v1" 
+
+class LMStudioPipeline:
+    def __init__(self, retriever, max_length=1024, temperature=0.7):
+        self.retriever = retriever
+        self.max_length = max_length
+        self.temperature = temperature
+
+    def answer(self, query):
+        relevant_docs = self.retriever.get_relevant_documents(query)
+        context = "\n".join(relevant_docs)
+        prompt = f"Context: {context}\n\nQuestion: {query}\n\nAnswer:"
+
+        response = requests.post(
+            f"{LM_STUDIO_URL}/chat/completions",
+            json={
+                "model": "local-model",
+                "messages": [
+                    {"role": "system", "content": "You are a helpful assistant."},
+                    {"role": "user", "content": prompt}
+                ],
+                "max_tokens": self.max_length,
+                "temperature": self.temperature
+            }
+        )
+
+        if response.status_code == 200:
+            return response.json()['choices'][0]['message']['content']
+        else:
+            return f"Error: {response.status_code} - {response.text}"
 
 def get_or_create_pages(filename, client, force_refresh=False):
     # unique identifier for the file
@@ -59,41 +90,7 @@ def get_or_create_pages(filename, client, force_refresh=False):
         print(f"Error occurred: {e}")
         return None
 
-# def initialize_rag(file_path):
-#     global retriever, rag_pipeline
-    
-#     client = unstructured_client.UnstructuredClient(
-#         api_key_auth=api_key_auth,
-#         server_url=server_url,
-#     )
-
-#     pages = get_or_create_pages(file_path, client)
-
-#     if pages:
-#         # Implement chunking
-#         text_splitter = RecursiveCharacterTextSplitter(
-#             chunk_size=1000,
-#             chunk_overlap=200,
-#             length_function=len,
-#         )
-#         chunks = []
-#         for page in pages:
-#             chunks.extend(text_splitter.split_text(page))
-
-#         # Embedding
-#         embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-mpnet-base-v2")
-
-#         # Create the retriever
-#         retriever = FAISSRetriever(chunks, embedding_model)
-        
-#         rag_pipeline = RAGPipeline(retriever, model_name="TinyLlama/TinyLlama-1.1B-Chat-v1.0")
-#         return True
-#     else:
-#         print("No pages were processed from the PDF.")
-#         return False
-
-
-def initialize_rag(file_path, model_name="gemini-pro", max_length=1024, temperature=0.7):
+def initialize_rag(file_path, max_length=1024, temperature=0.7):
     global retriever, rag_pipeline
     
     client = unstructured_client.UnstructuredClient(
@@ -104,7 +101,6 @@ def initialize_rag(file_path, model_name="gemini-pro", max_length=1024, temperat
     pages = get_or_create_pages(file_path, client)
 
     if pages:
-        # Implement chunking
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
             chunk_overlap=200,
@@ -114,11 +110,10 @@ def initialize_rag(file_path, model_name="gemini-pro", max_length=1024, temperat
         for page in pages:
             chunks.extend(text_splitter.split_text(page))
 
-        # Embedding
         embedding_model = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
         retriever = FAISSRetriever(chunks, embedding_model)
-        rag_pipeline = RAGPipeline(retriever, model_name=model_name, max_length=max_length, temperature=temperature)
+        rag_pipeline = LMStudioPipeline(retriever, max_length=max_length, temperature=temperature)
         return True
     else:
         print("No pages were processed from the PDF.")
@@ -134,7 +129,7 @@ def upload_file():
     if file:
         file_path = os.path.join('uploads', file.filename)
         file.save(file_path)
-        if initialize_rag(file_path, model_name="gemini-pro", max_length=2048, temperature=0.8):
+        if initialize_rag(file_path, max_length=2048, temperature=0.8):
             return jsonify({"message": "File uploaded and processed successfully"}), 200
         else:
             return jsonify({"error": "Failed to process the file"}), 500
