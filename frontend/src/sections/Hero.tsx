@@ -11,7 +11,6 @@ import { useSession } from '../lib/useSession';
 import { motion, useScroll, useTransform } from "framer-motion";
 import starsBg from '@/assets/stars.png';
 import { supabase } from '../lib/supabaseClient';
-import ReactMarkdown from 'react-markdown';
 
 const exampleQuestions = [
   "Tesla sales projections for Q4 2024",
@@ -225,15 +224,9 @@ export const Hero = () => {
                             <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
                               {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                             </div>
-                            <div className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                              {message.role === 'user' ? (
-                                <span>{message.content}</span>
-                              ) : (
-                                <ReactMarkdown className="prose prose-invert max-w-none">
-                                  {message.content}
-                                </ReactMarkdown>
-                              )}
-                            </div>
+                            <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
+                              {message.content}
+                            </span>
                           </div>
                         </div>
                       ))
