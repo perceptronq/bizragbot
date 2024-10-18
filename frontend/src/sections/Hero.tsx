@@ -63,11 +63,11 @@ export const Hero = () => {
       const { error } = await supabase
         .from('chat_history')
         .insert([
-          { 
-            user_id: user.id, 
-            role, 
-            content, 
-            chat_type: chatType 
+          {
+            user_id: user.id,
+            role,
+            content,
+            chat_type: chatType
           }
         ]);
 
@@ -80,14 +80,14 @@ export const Hero = () => {
   const handleSend = async (message: string = input) => {
     if (message.trim() && user) {
       const userMessage = { role: 'user', content: message };
-      
+
       if (isCleared) {
         setDisplayMessages(prev => [...prev, userMessage]);
       } else {
         setMessages(prev => [...prev, userMessage]);
         setDisplayMessages(prev => [...prev, userMessage]);
       }
-      
+
       setInput('');
       await saveChatMessage('user', message, 'user');
 
@@ -95,14 +95,14 @@ export const Hero = () => {
         const response = await axios.post('http://localhost:5000/query', { query: message });
         const apiResponse = response.data.answer;
         const assistantMessage = { role: 'assistant', content: apiResponse };
-        
+
         if (isCleared) {
           setDisplayMessages(prev => [...prev, assistantMessage]);
         } else {
           setMessages(prev => [...prev, assistantMessage]);
           setDisplayMessages(prev => [...prev, assistantMessage]);
         }
-        
+
         await saveChatMessage('assistant', apiResponse, 'rag');
       } catch (error) {
         console.error(error);
@@ -114,22 +114,22 @@ export const Hero = () => {
     const file = event.target.files?.[0];
     if (file) {
       const fileMessage = { role: 'user', content: `File uploaded: ${file.name}` };
-      
+
       if (isCleared) {
         setDisplayMessages([fileMessage]);
       } else {
         setMessages(prev => [...prev, fileMessage]);
         setDisplayMessages(prev => [...prev, fileMessage]);
       }
-      
+
       const formData = new FormData();
       formData.append('file', file);
-      
+
       axios.post('http://localhost:5000/upload', formData)
         .then(response => {
           console.log(response);
           const successMessage = { role: 'assistant', content: "File processed Successfully. You can now ask questions about its content." };
-          
+
           if (isCleared) {
             setDisplayMessages(prev => [...prev, successMessage]);
           } else {
@@ -140,7 +140,7 @@ export const Hero = () => {
         .catch(error => {
           console.error(error);
           const errorMessage = { role: 'assistant', content: "Error processing the file. Please try again." };
-          
+
           if (isCleared) {
             setDisplayMessages(prev => [...prev, errorMessage]);
           } else {
@@ -211,26 +211,28 @@ export const Hero = () => {
                     </Button>
                   </div>
                   <ScrollArea className="h-[300px] mb-4">
-                    {displayMessages.length === 0 ? (
-                      <div className="text-center text-gray-400 mt-4">
-                        {isCleared 
-                          ? "Chat Cleared. Send a Message to start a new Conversation." 
-                          : "No Messages yet. Start a Conversation!"}
-                      </div>
-                    ) : (
-                      displayMessages.map((message, index) => (
-                        <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                          <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
-                            <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
-                              {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
-                            </div>
-                            <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                              {message.content}
-                            </span>
-                          </div>
+                    <div className="pr-4">
+                      {displayMessages.length === 0 ? (
+                        <div className="text-center text-gray-400 mt-4">
+                          {isCleared
+                            ? "Chat Cleared. Send a Message to start a new Conversation."
+                            : "No Messages yet. Start a Conversation!"}
                         </div>
-                      ))
-                    )}
+                      ) : (
+                        displayMessages.map((message, index) => (
+                          <div key={index} className={`mb-4 flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                            <div className={`flex items-start space-x-2 ${message.role === 'user' ? 'flex-row-reverse space-x-reverse' : 'flex-row'}`}>
+                              <div className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center ${message.role === 'user' ? 'bg-sky-500' : 'bg-gray-600'}`}>
+                                {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
+                              </div>
+                              <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
+                                {message.content}
+                              </span>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </ScrollArea>
 
                   <div className="relative">
