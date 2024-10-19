@@ -8,6 +8,7 @@ import { supabase } from '../../lib/supabaseClient';
 import { Card, CardContent } from "@/components/Card";
 import { ScrollArea } from "@/components/ScrollArea";
 import { Bot, User, Trash2, X } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 
 interface ChatMessage {
     id: string;
@@ -138,7 +139,9 @@ const Dashboard: React.FC = () => {
                                                                 <p className="text-xs mb-1 opacity-75">
                                                                     {new Date(message.created_at).toLocaleString()} - {message.chat_type.toUpperCase()}
                                                                 </p>
-                                                                <p>{message.content}</p>
+                                                                <ReactMarkdown className="prose prose-invert max-w-none">
+                                                                    {message.content}
+                                                                </ReactMarkdown>
                                                                 <button
                                                                     onClick={() => handleDeleteClick(message.id)}
                                                                     className="absolute -right-2 -top-2 p-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"

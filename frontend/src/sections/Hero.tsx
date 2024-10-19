@@ -6,6 +6,7 @@ import { Input } from "@/components/Input";
 import { Card, CardContent } from "@/components/Card";
 import { ScrollArea } from "@/components/ScrollArea";
 import { ArrowUp, Bot, User, Paperclip, RefreshCw } from "lucide-react";
+import ReactMarkdown from 'react-markdown';
 import axios from 'axios';
 import { useSession } from '../lib/useSession';
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -226,7 +227,9 @@ export const Hero = () => {
                                 {message.role === 'user' ? <User className="w-5 h-5 text-white" /> : <Bot className="w-5 h-5 text-white" />}
                               </div>
                               <span className={`inline-block p-3 rounded-lg ${message.role === 'user' ? 'bg-sky-500 text-white' : 'bg-gray-700 text-gray-200'}`}>
-                                {message.content}
+                                <ReactMarkdown className="prose prose-invert max-w-none">
+                                  {message.content}
+                                </ReactMarkdown>
                               </span>
                             </div>
                           </div>
