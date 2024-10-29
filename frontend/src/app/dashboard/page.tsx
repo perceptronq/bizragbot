@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSession } from '../../lib/useSession';
 import { Header } from '@/sections/Header';
 import { Footer } from '@/sections/Footer';
@@ -117,16 +117,16 @@ const Dashboard: React.FC = () => {
     return (
         <div className="flex flex-col min-h-screen">
             <Header />
-            <main className="flex-grow flex items-center justify-center p-4">
-                <div className="w-full max-w-2xl space-y-6">
+            <main className="flex-grow flex items-center justify-center p-4 md:p-8 lg:p-12">
+                <div className="w-full max-w-3xl space-y-6">
                     <h1 className="text-3xl font-bold text-center">Dashboard</h1>
                     {user ? (
                         <>
                             <p className="text-lg text-center">Welcome, {user.email}</p>
-                            <Card className="bg-gray-800 border-gray-700">
-                                <CardContent className="p-4">
+                            <Card className="bg-gray-800 border-gray-700 w-full max-w-4xl mx-auto">
+                                <CardContent className="p-4 md:p-6">
                                     <h2 className="text-xl font-semibold mb-4 text-white">Chat History</h2>
-                                    <ScrollArea className="h-[400px]">
+                                    <ScrollArea className="h-[400px] md:h-[500px]">
                                         <div className="pr-4">
                                             {chatHistory.length > 0 ? (
                                                 chatHistory.map((message) => (
